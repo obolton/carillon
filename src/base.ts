@@ -12,6 +12,9 @@ export abstract class BaseReactive<Value, Change = void> implements Reactive<Val
   protected readonly subscribers = new Set<SubscribeCallback<Value, Change>>();
 
   subscribe(callback: SubscribeCallback<Value, Change>, signal?: AbortSignal) {
+    if (signal?.aborted) {
+      return () => false;
+    }
     this.subscribers.add(callback);
     const unsubscriber = () => this.unsubscribe(callback);
     signal?.addEventListener("abort", unsubscriber, {
@@ -38,8 +41,16 @@ export abstract class BaseReactive<Value, Change = void> implements Reactive<Val
 
   abstract get value(): Value;
 
-  derive<DerivedValue>(transform: (input: Value) => DerivedValue): ComputedReactive<DerivedValue> {
-    return new Computed(this, transform);
+  derive<DerivedValue>(
+    transform: (input: Value) => DerivedValue,
+    signal?: AbortSignal,
+  ): ComputedReactive<DerivedValue> {
+    const computed = new Computed(this, transform);
+    signal?.addEventListener("abort", () => computed.disconnect(), {
+      passive: true,
+      once: true,
+    });
+    return computed;
   }
 }
 

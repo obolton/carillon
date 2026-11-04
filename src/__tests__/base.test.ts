@@ -3,6 +3,55 @@ import { Computed } from "../base";
 import { ReactiveValue } from "../value";
 import { ReactiveArray } from "../array";
 
+describe("BaseReactive", () => {
+  describe("subscribe", () => {
+    test("unsubscribes when the signal is aborted", () => {
+      const r = new ReactiveValue(1);
+      const controller = new AbortController();
+      const subscriber = vi.fn();
+      r.subscribe(subscriber, controller.signal);
+      r.value = 2;
+      expect(subscriber).toHaveBeenCalledTimes(1);
+
+      controller.abort();
+      r.value = 3;
+      expect(subscriber).toHaveBeenCalledTimes(1);
+    });
+
+    test("does not subscribe when the signal is already aborted", () => {
+      const r = new ReactiveValue(1);
+      const controller = new AbortController();
+      controller.abort();
+      const subscriber = vi.fn();
+      const unsubscribe = r.subscribe(subscriber, controller.signal);
+      r.value = 2;
+      expect(subscriber).not.toHaveBeenCalled();
+      expect(unsubscribe()).toBe(false);
+    });
+  });
+
+  describe("derive", () => {
+    test("disconnects the derived value when the signal is aborted", () => {
+      const r = new ReactiveValue(1);
+      const controller = new AbortController();
+      const transform = vi.fn((value: number) => value + 1);
+      const derived = r.derive(transform, controller.signal);
+      const subscriber = vi.fn();
+      derived.subscribe(subscriber);
+      expect(derived.value).toBe(2);
+
+      controller.abort();
+      r.value = 5;
+      expect(subscriber).not.toHaveBeenCalled();
+
+      // Disconnected from its input, so it recomputes on every read.
+      expect(derived.value).toBe(6);
+      expect(derived.value).toBe(6);
+      expect(transform).toHaveBeenCalledTimes(3);
+    });
+  });
+});
+
 describe("Computed", () => {
   test("computes a value from a single input", () => {
     const r = new ReactiveValue(1);
@@ -19,6 +68,16 @@ describe("Computed", () => {
     computed.subscribe(subscriber);
     r.value = 3;
     expect(subscriber).toHaveBeenCalledTimes(1);
+  });
+
+  test("does not subscribe to its input when the signal is already aborted", () => {
+    const r = new ReactiveValue(1);
+    const subscribe = vi.spyOn(r, "subscribe");
+    const computed = new Computed(r, (input) => input + 1);
+    const controller = new AbortController();
+    controller.abort();
+    computed.subscribe(vi.fn(), controller.signal);
+    expect(subscribe).not.toHaveBeenCalled();
   });
 
   test("defers the computation until the computed value is read", () => {
