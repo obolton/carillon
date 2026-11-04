@@ -1,0 +1,64 @@
+{
+  "name": "carillon",
+  "version": "0.1.0",
+  "description": "Reactive values and collections",
+  "keywords": [
+    "collection",
+    "observable",
+    "reactive",
+    "state",
+    "store",
+    "subscription"
+  ],
+  "homepage": "https://github.com/obolton/carillon#readme",
+  "bugs": {
+    "url": "https://github.com/obolton/carillon/issues"
+  },
+  "license": "MIT",
+  "author": "Oliver Bolton",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/obolton/carillon.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "lint": "oxlint --type-aware",
+    "typecheck": "tsc",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build",
+    "prepack": "pnpm build"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/core": "^0.18.5",
+    "@vitest/coverage-v8": "^5.0.3",
+    "oxfmt": "^0.72.0",
+    "oxlint": "1.90.0",
+    "oxlint-tsgolint": "7.0.2005",
+    "publint": "^0.3.25",
+    "tsdown": "^0.23.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@12.16.1"
+}
