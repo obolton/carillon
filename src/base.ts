@@ -41,16 +41,8 @@ export abstract class BaseReactive<Value, Change = void> implements Reactive<Val
 
   abstract get value(): Value;
 
-  derive<DerivedValue>(
-    transform: (input: Value) => DerivedValue,
-    signal?: AbortSignal,
-  ): ComputedReactive<DerivedValue> {
-    const computed = new Computed(this, transform);
-    signal?.addEventListener("abort", () => computed.disconnect(), {
-      passive: true,
-      once: true,
-    });
-    return computed;
+  derive<DerivedValue>(transform: (input: Value) => DerivedValue): ComputedReactive<DerivedValue> {
+    return new Computed(this, transform);
   }
 }
 

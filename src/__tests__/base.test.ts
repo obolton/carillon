@@ -29,27 +29,6 @@ describe("BaseReactive", () => {
       expect(unsubscribe()).toBe(false);
     });
   });
-
-  describe("derive", () => {
-    test("disconnects the derived value when the signal is aborted", () => {
-      const r = new ReactiveValue(1);
-      const controller = new AbortController();
-      const transform = vi.fn((value: number) => value + 1);
-      const derived = r.derive(transform, controller.signal);
-      const subscriber = vi.fn();
-      derived.subscribe(subscriber);
-      expect(derived.value).toBe(2);
-
-      controller.abort();
-      r.value = 5;
-      expect(subscriber).not.toHaveBeenCalled();
-
-      // Disconnected from its input, so it recomputes on every read.
-      expect(derived.value).toBe(6);
-      expect(derived.value).toBe(6);
-      expect(transform).toHaveBeenCalledTimes(3);
-    });
-  });
 });
 
 describe("Computed", () => {

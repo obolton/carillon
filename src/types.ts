@@ -4,7 +4,7 @@ export interface Reactive<T = any, C = void> {
   subscribe(callback: SubscribeCallback<T, C>, signal?: AbortSignal): UnsubscribeCallback;
   unsubscribe(callback: SubscribeCallback<T, C>): void;
   disconnect(): void;
-  derive<V>(transform: (input: T) => V, signal?: AbortSignal): ComputedReactive<V>;
+  derive<V>(transform: (input: T) => V): ComputedReactive<V>;
 }
 
 export interface ComputedReactive<T> extends Reactive<T> {
