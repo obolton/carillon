@@ -78,6 +78,81 @@ describe("Computed", () => {
     expect(transform).toHaveBeenCalledTimes(1);
   });
 
+  describe("unsubscribe", () => {
+    test("stays subscribed to its input while other subscribers remain", () => {
+      const r = new ReactiveValue(1);
+      const computed = new Computed(r, (input) => input + 1);
+      const first = vi.fn();
+      const second = vi.fn();
+      const unsubscribeFirst = computed.subscribe(first);
+      computed.subscribe(second);
+      unsubscribeFirst();
+      r.value = 2;
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledTimes(1);
+    });
+
+    test("unsubscribes from its input when the last subscriber is removed", () => {
+      const r = new ReactiveValue(1);
+      const unsubscribeInput = vi.spyOn(r, "unsubscribe");
+      const computed = new Computed(r, (input) => input + 1);
+      const unsubscribe = computed.subscribe(vi.fn());
+      expect(unsubscribeInput).not.toHaveBeenCalled();
+      unsubscribe();
+      expect(unsubscribeInput).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("disconnect", () => {
+    test("removes all subscribers and unsubscribes from its input", () => {
+      const r = new ReactiveValue(1);
+      const unsubscribeInput = vi.spyOn(r, "unsubscribe");
+      const computed = new Computed(r, (input) => input + 1);
+      const subscriber = vi.fn();
+      computed.subscribe(subscriber);
+      computed.subscribe(vi.fn());
+      computed.disconnect();
+      r.value = 2;
+      expect(subscriber).not.toHaveBeenCalled();
+      expect(unsubscribeInput).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("markAsStale", () => {
+    test("notifies subscribers when the recomputed value changes", () => {
+      const r = new ReactiveValue(1);
+      let factor = 1;
+      const computed = new Computed(r, (input) => input * factor);
+      const subscriber = vi.fn();
+      computed.subscribe(subscriber);
+      expect(computed.value).toBe(1);
+      factor = 2;
+      computed.markAsStale();
+      expect(subscriber).toHaveBeenCalledTimes(1);
+      expect(computed.value).toBe(2);
+    });
+
+    test("does not notify when the recomputed value is unchanged", () => {
+      const r = new ReactiveValue(1);
+      const transform = vi.fn((value: number) => value + 1);
+      const computed = new Computed(r, transform);
+      const subscriber = vi.fn();
+      computed.subscribe(subscriber);
+      expect(computed.value).toBe(2);
+      computed.markAsStale();
+      expect(subscriber).not.toHaveBeenCalled();
+      expect(transform).toHaveBeenCalledTimes(2);
+    });
+
+    test("does not recompute when unsubscribed", () => {
+      const r = new ReactiveValue(1);
+      const transform = vi.fn((value: number) => value + 1);
+      const computed = new Computed(r, transform);
+      computed.markAsStale();
+      expect(transform).not.toHaveBeenCalled();
+    });
+  });
+
   describe("unsubscribed", () => {
     test("recomputes on every read", () => {
       const r = new ReactiveValue(1);

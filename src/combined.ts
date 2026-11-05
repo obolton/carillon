@@ -41,10 +41,7 @@ export class Combined<T extends ReactiveInputs, V> extends BaseReactive<V> {
 
   private markAsStale() {
     this.stale = true;
-
-    if (this.subscribers.size > 0) {
-      this.notify();
-    }
+    this.notify();
   }
 
   get value(): V {
