@@ -10,7 +10,7 @@ type CombinedValue<T extends ReactiveInputs> = {
 export class Combined<T extends ReactiveInputs, V> extends BaseReactive<V> {
   private readonly inputs: T;
   private readonly transform: (values: CombinedValue<T>) => V;
-  private unsubscribeCallbacks?: UnsubscribeCallback[];
+  private unsubscribeCallbacks: UnsubscribeCallback[] | undefined;
 
   private cachedValue?: V;
   private stale = true;
@@ -21,7 +21,7 @@ export class Combined<T extends ReactiveInputs, V> extends BaseReactive<V> {
     this.transform = transform;
   }
 
-  subscribe(callback: SubscribeCallback<V>, signal?: AbortSignal) {
+  override subscribe(callback: SubscribeCallback<V>, signal?: AbortSignal) {
     const result = super.subscribe(callback, signal);
     if (!this.unsubscribeCallbacks && this.subscribers.size > 0) {
       this.unsubscribeCallbacks = Object.values(this.inputs).map((input) =>
@@ -31,7 +31,7 @@ export class Combined<T extends ReactiveInputs, V> extends BaseReactive<V> {
     return result;
   }
 
-  unsubscribe(callback: SubscribeCallback<V>) {
+  override unsubscribe(callback: SubscribeCallback<V>) {
     const result = super.unsubscribe(callback);
     if (this.subscribers.size === 0) {
       this.disconnect();
@@ -59,7 +59,7 @@ export class Combined<T extends ReactiveInputs, V> extends BaseReactive<V> {
     return this.cachedValue as V;
   }
 
-  disconnect() {
+  override disconnect() {
     super.disconnect();
     this.unsubscribeCallbacks?.forEach((unsubscribe) => unsubscribe());
     this.unsubscribeCallbacks = undefined;

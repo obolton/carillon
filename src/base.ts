@@ -49,7 +49,7 @@ export abstract class BaseReactive<Value, Change = void> implements Reactive<Val
 export class Computed<Input extends Reactive<unknown, unknown>, Value> extends BaseReactive<Value> {
   private readonly input: Input;
   private readonly transform: (value: ReactiveType<Input>) => Value;
-  private unsubscribeCallback?: UnsubscribeCallback;
+  private unsubscribeCallback: UnsubscribeCallback | undefined;
 
   private cachedValue?: Value;
   private stale = true;
@@ -60,7 +60,7 @@ export class Computed<Input extends Reactive<unknown, unknown>, Value> extends B
     this.transform = transform;
   }
 
-  subscribe(callback: SubscribeCallback<Value>, signal?: AbortSignal) {
+  override subscribe(callback: SubscribeCallback<Value>, signal?: AbortSignal) {
     const result = super.subscribe(callback, signal);
     if (!this.unsubscribeCallback && this.subscribers.size > 0) {
       this.unsubscribeCallback = this.input.subscribe(() => this.markAsStale());
@@ -69,7 +69,7 @@ export class Computed<Input extends Reactive<unknown, unknown>, Value> extends B
     return result;
   }
 
-  unsubscribe(callback: SubscribeCallback<Value>) {
+  override unsubscribe(callback: SubscribeCallback<Value>) {
     const result = super.unsubscribe(callback);
     if (this.subscribers.size === 0) {
       this.disconnect();
@@ -96,7 +96,7 @@ export class Computed<Input extends Reactive<unknown, unknown>, Value> extends B
     return this.cachedValue as Value;
   }
 
-  disconnect() {
+  override disconnect() {
     super.disconnect();
     this.unsubscribeCallback?.();
     this.unsubscribeCallback = undefined;
