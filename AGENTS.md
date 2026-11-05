@@ -10,7 +10,7 @@ Carillon provides reactive values and collections for TypeScript, with explicit 
 
 ## Workflow
 
-- After making changes, run `pnpm check` to check types, linting and formatting, run the tests and build the package.
+- After making changes, run `pnpm check` to check types, linting and formatting and run the tests, then run `pnpm build` to build the package.
 - Fix any failures reported and re-run until the checks pass.
 - Formatting failures can be auto-fixed with `pnpm format`.
 
@@ -18,7 +18,7 @@ Carillon provides reactive values and collections for TypeScript, with explicit 
 
 **Note**: Always use `pnpm` for running scripts. Do not use `npm` or `npx`.
 
-- `pnpm check`: Run all status checks in sequence (typecheck, lint, format, tests, build), stopping at the first failure.
+- `pnpm check`: Run all status checks in sequence (typecheck, lint, format, tests), stopping at the first failure.
 - `pnpm typecheck`: Check types.
 - `pnpm lint`: Lint TypeScript files.
 - `pnpm format`: Format files with oxfmt.

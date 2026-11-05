@@ -149,7 +149,7 @@ unwrap("plain"); // "plain"
 
 ```sh
 pnpm install
-pnpm check # typecheck, lint, format check, test and build
+pnpm check # typecheck, lint, format check and test
 pnpm build # bundle to dist/
 pnpm dev # rebuild on changes
 ```

@@ -42,7 +42,8 @@
     "typecheck": "tsc",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
+    "prepublishOnly": "pnpm check",
     "prepack": "pnpm build"
   },
   "devDependencies": {
