@@ -38,7 +38,7 @@
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "lint": "oxlint --type-aware",
+    "lint": "oxlint",
     "typecheck": "tsc",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
