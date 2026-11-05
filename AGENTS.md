@@ -18,7 +18,7 @@ Carillon provides reactive values and collections for TypeScript, with explicit 
 
 **Note**: Always use `pnpm` for running scripts. Do not use `npm` or `npx`.
 
-- `pnpm check`: Run all status checks in sequence (typecheck, lint, format, tests), stopping at the first failure.
+- `pnpm check`: Run all status checks in sequence (typecheck, lint, format, tests with coverage thresholds), stopping at the first failure.
 - `pnpm typecheck`: Check types.
 - `pnpm lint`: Lint TypeScript files.
 - `pnpm format`: Format files with oxfmt.
@@ -41,6 +41,7 @@ Carillon provides reactive values and collections for TypeScript, with explicit 
 - Colocate test files with code in `__tests__` directories, using `__tests__/*.test.ts` files.
 - Use `describe` blocks for each function being tested and to provide structure to test suites.
 - Run tests with `pnpm test` and check coverage with `pnpm test:coverage`.
+- Coverage is enforced at 100% by `pnpm check`. New code must be fully covered by tests.
 
 ## Publishing
 
