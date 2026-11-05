@@ -2,11 +2,13 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "preserve",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ES2025", "DOM"],
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
-    "isolatedModules": true,
+    "erasableSyntaxOnly": true,
     "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
     "noEmit": true
   },
   "include": ["src", "*.config.ts"]
