@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish to npm
+    name: Stage npm release
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: npm
@@ -50,7 +50,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Publish
+      - name: Stage
         env:
           DIST_TAG: ${{ github.event.release.prerelease && 'next' || 'latest' }}
-        run: npm publish --ignore-scripts --tag "$DIST_TAG"
+        run: npm stage publish --ignore-scripts --tag "$DIST_TAG"

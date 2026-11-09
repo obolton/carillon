@@ -46,5 +46,5 @@ Carillon provides reactive values and collections for TypeScript, with explicit 
 ## Publishing
 
 - `pnpm build` bundles creates `dist/` with `tsdown` and validates the package.
-- Releases are published by the `Publish` workflow.
+- Releases are staged on npm by the `Publish` workflow.
 - To release: bump `version` in `package.json`, commit, then create a GitHub release tagged `v<version>`.
