@@ -2,7 +2,7 @@
 
 Reactive values and collections for TypeScript.
 
-A `carillon` is a musical instrument with a set of bells played together in harmony.
+A [carillon](https://en.wikipedia.org/wiki/Carillon) is a musical instrument with a set of bells played together in harmony.
 
 - Explicit subscriptions and `AbortSignal` support for cleanup.
 - Derived (`derive`) and combined (`combine`) values that declare their inputs and subscribe to them lazily. No automatic dependency tracking.
