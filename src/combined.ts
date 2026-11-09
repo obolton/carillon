@@ -27,6 +27,7 @@ export class Combined<T extends ReactiveInputs, V> extends BaseReactive<V> {
       this.unsubscribeCallbacks = Object.values(this.inputs).map((input) =>
         input.subscribe(() => this.markAsStale()),
       );
+      this.stale = true;
     }
     return result;
   }

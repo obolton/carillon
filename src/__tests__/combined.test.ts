@@ -79,6 +79,16 @@ describe("Combined", () => {
     expect(transform).toHaveBeenCalledTimes(2);
   });
 
+  test("recomputes after subscribing when an input changed while unsubscribed", () => {
+    const a = new ReactiveValue(1);
+    const b = new ReactiveValue(2);
+    const combined = combine({ a, b }, ({ a, b }) => a + b);
+    expect(combined.value).toBe(3);
+    a.value = 10;
+    combined.subscribe(vi.fn());
+    expect(combined.value).toBe(12);
+  });
+
   describe("unsubscribe", () => {
     test("stays subscribed to its inputs while other subscribers remain", () => {
       const a = new ReactiveValue(1);
