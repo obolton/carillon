@@ -10,6 +10,7 @@ type NotifyArgs<Change> = [Change] extends [void] ? [] : [change: Change];
 
 export abstract class BaseReactive<Value, Change = void> implements Reactive<Value, Change> {
   protected readonly subscribers = new Set<SubscribeCallback<Value, Change>>();
+  private readonly abortListeners = new Map<SubscribeCallback<Value, Change>, AbortController>();
 
   subscribe(callback: SubscribeCallback<Value, Change>, signal?: AbortSignal) {
     if (signal?.aborted) {
@@ -17,18 +18,32 @@ export abstract class BaseReactive<Value, Change = void> implements Reactive<Val
     }
     this.subscribers.add(callback);
     const unsubscriber = () => this.unsubscribe(callback);
-    signal?.addEventListener("abort", unsubscriber, {
-      passive: true,
-      once: true,
-    });
+    if (signal) {
+      let listeners = this.abortListeners.get(callback);
+      if (!listeners) {
+        listeners = new AbortController();
+        this.abortListeners.set(callback, listeners);
+      }
+      signal.addEventListener("abort", unsubscriber, {
+        passive: true,
+        once: true,
+        signal: listeners.signal,
+      });
+    }
     return unsubscriber;
   }
 
   unsubscribe(callback: SubscribeCallback<Value, Change>) {
+    this.abortListeners.get(callback)?.abort();
+    this.abortListeners.delete(callback);
     return this.subscribers.delete(callback);
   }
 
   disconnect() {
+    for (const listeners of this.abortListeners.values()) {
+      listeners.abort();
+    }
+    this.abortListeners.clear();
     this.subscribers.clear();
   }
 

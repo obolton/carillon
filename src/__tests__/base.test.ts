@@ -28,6 +28,54 @@ describe("BaseReactive", () => {
       expect(subscriber).not.toHaveBeenCalled();
       expect(unsubscribe()).toBe(false);
     });
+
+    test("subscribes the same callback with more than one signal", () => {
+      const r = new ReactiveValue(0);
+      const first = new AbortController();
+      const second = new AbortController();
+      const subscriber = vi.fn();
+      r.subscribe(subscriber, first.signal);
+      r.subscribe(subscriber, second.signal);
+
+      first.abort();
+      r.value = 1;
+      expect(subscriber).not.toHaveBeenCalled();
+
+      r.subscribe(subscriber);
+      second.abort();
+      r.value = 2;
+      expect(subscriber).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("unsubscribe", () => {
+    test("stops listening to the signal", () => {
+      const r = new ReactiveValue(0);
+      const controller = new AbortController();
+      const subscriber = vi.fn();
+      const unsubscribe = r.subscribe(subscriber, controller.signal);
+      unsubscribe();
+
+      r.subscribe(subscriber);
+      controller.abort();
+      r.value = 1;
+      expect(subscriber).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("disconnect", () => {
+    test("stops listening to the signal", () => {
+      const r = new ReactiveValue(0);
+      const controller = new AbortController();
+      const subscriber = vi.fn();
+      r.subscribe(subscriber, controller.signal);
+      r.disconnect();
+
+      r.subscribe(subscriber);
+      controller.abort();
+      r.value = 1;
+      expect(subscriber).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
